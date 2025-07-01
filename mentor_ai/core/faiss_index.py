@@ -1,5 +1,7 @@
 import faiss
 import numpy as np
+from mentor_ai.db.connection import get_db
+from bson.objectid import ObjectId
 import os
 import json
 
@@ -79,3 +81,16 @@ def search_similar(query_embedding, top_k=5):
             results.append(("UNKNOWN", distances[0][rank]))
 
     return results
+
+def get_mentor_by_id(mentor_id: str):
+    db = get_db()
+    
+    try:
+        object_id = ObjectId(mentor_id)
+    except Exception:
+        return None
+
+    mentor = db.Mentors.find_one({"_id": object_id})
+    if mentor:
+        mentor["_id"] = str(mentor["_id"])
+    return mentor  
